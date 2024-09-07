@@ -1,4 +1,9 @@
-"""Govee platform."""
+"""
+Govee platform.
+
+2024-09-07 Add supported color modes property
+
+"""
 
 from datetime import timedelta, datetime
 import logging
@@ -14,6 +19,8 @@ from homeassistant.components.light import (
     SUPPORT_COLOR,
     SUPPORT_COLOR_TEMP,
     LightEntity,
+    LightEntityFeature,
+    ColorMode
 )
 from homeassistant.const import CONF_DELAY
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -167,6 +174,32 @@ class GoveeLightEntity(LightEntity):
         if self._device.support_color_tem:
             support_flags |= SUPPORT_COLOR_TEMP
         return support_flags
+
+    @property
+    def supported_color_modes(self) -> set[ColorMode]:
+        """Return the supported color modes of the light."""
+
+        # Start with an empty set
+        color_modes: set[ColorMode] = set[ColorMode]()
+
+        # If SUPPORT_COLOR_TEMP is set, add ColorMode.COLOR_TEMP
+        if self._device.support_color_tem:
+            color_modes.add(ColorMode.COLOR_TEMP)
+
+        # If SUPPORT_COLOR is set, add ColorMode.HS (Hue & Saturation only, not RGB)
+        if self._device.support_color:
+            color_modes.add(ColorMode.HS)
+
+        # If SUPPORT_BRIGHTNESS is set and no color modes have yet been added, add ColorMode.BRIGHTNESS
+        if self._device.support_brightness:
+            if len(color_modes) == 0:
+                color_modes.add(ColorMode.BRIGHTNESS)
+
+        # If no color modes have yet been added, add ColorMode.ONOFF
+        if len(color_modes) == 0:
+            color_modes.add(ColorMode.ONOFF)
+
+        return color_modes
 
     async def async_turn_on(self, **kwargs):
         """Turn device on."""
