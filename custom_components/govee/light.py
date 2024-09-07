@@ -1,6 +1,7 @@
 """
 Govee platform.
 
+2024-09-07 Remove deprecated supported_features (replaced by supported_color_modes)
 2024-09-07 Add color_mode property
 2024-09-07 Add supported_color_modes property
 
@@ -20,7 +21,6 @@ from homeassistant.components.light import (
     SUPPORT_COLOR,
     SUPPORT_COLOR_TEMP,
     LightEntity,
-    LightEntityFeature,
     ColorMode
 )
 from homeassistant.const import CONF_DELAY
@@ -163,18 +163,6 @@ class GoveeLightEntity(LightEntity):
     def _state(self):
         """Lights internal state."""
         return self._device  # self._hub.state(self._device)
-
-    @property
-    def supported_features(self):
-        """Flag supported features."""
-        support_flags = 0
-        if self._device.support_brightness:
-            support_flags |= SUPPORT_BRIGHTNESS
-        if self._device.support_color:
-            support_flags |= SUPPORT_COLOR
-        if self._device.support_color_tem:
-            support_flags |= SUPPORT_COLOR_TEMP
-        return support_flags
 
     @property
     def supported_color_modes(self) -> set[ColorMode]:
