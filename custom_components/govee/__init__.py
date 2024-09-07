@@ -1,4 +1,10 @@
-"""The Govee integration."""
+"""
+ The Govee integration.
+
+ 2024-09-07 Changes to replace async_forward_entry_setup with (plural) async_forward_entry_setups and add await
+
+"""
+
 import asyncio
 import logging
 
@@ -68,10 +74,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await async_unload_entry(hass, entry)
         raise PlatformNotReady()
 
+    component_list: list = []
     for component in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, component)
-        )
+        component_list.append(component)
+    await hass.config_entries.async_forward_entry_setups(entry, component_list)
 
     return True
 
