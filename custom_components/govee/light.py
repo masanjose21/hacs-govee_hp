@@ -1,7 +1,8 @@
 """
 Govee platform.
 
-2024-09-07 Add supported color modes property
+2024-09-07 Add color_mode property
+2024-09-07 Add supported_color_modes property
 
 """
 
@@ -329,6 +330,38 @@ class GoveeLightEntity(LightEntity):
         if not self._device.color_temp:
             return None
         return color.color_temperature_kelvin_to_mired(self._device.color_temp)
+
+    @property
+    def color_mode(self) -> ColorMode:
+        "Return the color mode of the light."""
+
+        # If supported_color_modes includes ColorMode.HS
+        if (
+            ColorMode.HS in self.supported_color_modes
+            and self.hs_color is not None
+        ):
+            return ColorMode.HS
+            
+        # If supported_color_modes includes ColorMode.COLOR_TEMP
+        if (
+            ColorMode.COLOR_TEMP in self.supported_color_modes
+            and self.color_temp is not None
+        ):
+            return ColorMode.COLOR_TEMP
+
+        # If supported_color_modes includes ColorMode.BRIGHTNESS
+        if (
+            ColorMode.BRIGHTNESS in self.supported_color_modes
+            and self.brightness is not None
+        ):
+            return ColorMode.BRIGHTNESS
+
+        # If supported_color_modes includes ColorMode.ONOFF
+        if ColorMode.ONOFF in self.supported_color_modes:
+            return ColorMode.ONOFF
+
+        # Else ColorMode.UNKNOWN
+        return ColorMode.UNKNOWN
 
     @property
     def min_mireds(self):
