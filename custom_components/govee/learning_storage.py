@@ -26,7 +26,7 @@ class GoveeLearningStorage(GoveeAbstractLearningStorage):
         """Restore from yaml file."""
         learned_info = {}
         try:
-            learned_dict = self._hass.async_add_executor_job(
+            learned_dict = await self._hass.async_add_executor_job(
                 load_yaml, self._config_dir + LEARNING_STORAGE_YAML
             )
             learned_info = {
@@ -62,7 +62,7 @@ class GoveeLearningStorage(GoveeAbstractLearningStorage):
     async def write(self, learned_info):
         """Save to yaml file."""
         leaned_dict = {device: asdict(learned_info[device]) for device in learned_info}
-        self._hass.async_add_executor_job(
+        await self._hass.async_add_executor_job(
             save_yaml, self._config_dir + LEARNING_STORAGE_YAML, leaned_dict
         )
         _LOGGER.info(
